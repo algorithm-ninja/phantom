@@ -6,7 +6,7 @@ import subprocess
 import sys
 import time
 
-PREFIX = "fddf::"
+PREFIX = "fdcd::"
 GATEWAY = f"[{PREFIX}1]:5000"
 CONFIG_URL = f"http://{GATEWAY}/config?ip="
 

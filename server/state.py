@@ -29,7 +29,7 @@ class State:
             return json.dumps(self.config[mode]["contestant"])
     
     def is_worker(self, ip: str):
-        return ip.startswith("fdfd:d")
+        return ip.startswith("fdcd:d")
     
     def read_config(self):
         with open(self.config_fname) as f:
