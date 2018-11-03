@@ -4,7 +4,8 @@ from typing import List, Dict
 import json
 
 class State:
-    def __init__(self):
+    def __init__(self, config: str, default_mode: str):
+        self.config_fname = config
         self.known_ips: List[str] = list()
         self.mode: Dict[str, str] = dict()
 
@@ -16,7 +17,7 @@ class State:
                     raise Exception("Malformed ethers file")
                 ip = line.split(' ')[1]
                 self.known_ips.append(ip)
-                self.mode[ip] = "default"
+                self.mode[ip] = default_mode
 
         self.config = None
         self.read_config()
@@ -39,7 +40,7 @@ class State:
         return ip.startswith("fdfd:d")
     
     def read_config(self):
-        with open("config.json") as f:
+        with open(self.config_fname) as f:
             data = json.load(f)
 
             # Sanity check
