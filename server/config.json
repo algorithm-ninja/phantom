@@ -1,0 +1,23 @@
+{
+    "wait":
+    {
+        "any":
+        {
+            "mode":"wait",
+            "cmds":[]
+        }
+    },
+    "default":
+    {
+        "contestant":
+        {
+            "mode":"exec",
+            "cmds":[]
+        },
+        "worker":
+        {
+            "mode":"exec",
+            "cmds":[]
+        }
+    }
+}
