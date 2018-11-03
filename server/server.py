@@ -9,6 +9,7 @@ state = State()
 @app.route('/config', methods=['GET'])
 def config():
     ip = request.args.get('ip')
+    if ip is None: return "Missing parameter 'ip'"
     return state.get_config(ip.lower())
 
 if __name__ == '__main__':

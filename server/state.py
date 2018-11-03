@@ -11,6 +11,7 @@ class State:
         with open("/etc/ethers", "r") as fin:
             for line in fin.readlines():
                 line = line.strip()
+                if len(line) == 0: continue
                 if len(line.split(' ')) != 2:
                     raise Exception("Malformed ethers file")
                 ip = line.split(' ')[1]
