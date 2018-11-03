@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from state import State
 from flask import Flask, request
 
