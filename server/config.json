@@ -1,23 +1,18 @@
 {
-    "wait":
-    {
-        "any":
-        {
-            "mode":"wait",
-            "cmds":[]
-        }
-    },
-    "default":
-    {
-        "contestant":
-        {
-            "mode":"exec",
-            "cmds":[]
-        },
-        "worker":
-        {
-            "mode":"exec",
-            "cmds":[]
-        }
+  "wait": {
+    "any": {
+      "mode": "wait",
+      "cmds": ["echo 42", "cat /etc/passwd"]
     }
+  },
+  "default": {
+    "contestant": {
+      "mode": "exec",
+      "cmds": []
+    },
+    "worker": {
+      "mode": "exec",
+      "cmds": []
+    }
+  }
 }
