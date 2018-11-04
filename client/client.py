@@ -12,14 +12,16 @@ CONFIG_URL = f"http://{GATEWAY}/config?ip="
 
 
 def my_ip():
-    wired, wireless, device = None, None, ""
+    device = ""
     
     print("[*] Waiting for a network interface")
-    while wired is None and wireless is None:
+    wait_start = time.time()
+    while True:
         proc = subprocess.run(
             f"ip --json addr show to {PREFIX}/24", stdout=subprocess.PIPE, shell=True)
         ips = json.loads(proc.stdout)
 
+        wired, wireless = None, None
         for interface in ips:
             if interface["operstate"] != "UP": continue
             if interface["ifname"].startswith('e'):
@@ -31,10 +33,11 @@ def my_ip():
             print("[*] Wired interface found")
             device = wired["ifname"]
             break
-        if wireless is not None:
-            print("[*] Wireless interface found")
-            device = wireless["ifname"]
-            break
+        if (time.time() - wait_start) > 20:
+            if wireless is not None:
+                print("[*] Wireless interface found")
+                device = wireless["ifname"]
+                break
         
         time.sleep(1)
     
