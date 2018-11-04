@@ -6,11 +6,11 @@
     }
   },
   "default": {
-    "contestant": {
+    "fdcd::c:0:0/96": {
       "mode": "exec",
       "cmds": []
     },
-    "worker": {
+    "fdcd::d:0:0/96": {
       "mode": "exec",
       "cmds": []
     }
