@@ -44,8 +44,13 @@ def my_ip():
     if len(possilbe_ips) != 1:
         print("[E] Found zero or more than one possible ips!")
         print(f"    Possible ips: {possilbe_ips}")
-        print(json.dumps(ips, indent=4))
-        sys.exit(1)
+        print(json.dumps(ips))
+
+        subprocess.run(f'ip addr flush dev {device}', shell=True)
+        print("[E] Rebooting in 10 seconds")
+        time.sleep(10)
+        subprocess.run('reboot', shell=True)
+    
     return possilbe_ips[0]
 
 
