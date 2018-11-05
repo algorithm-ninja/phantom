@@ -20,12 +20,15 @@ def ask_integer(desc, start, end, h, w):
             run("dialog --msgbox \"Not a valid integer\" 5 23", shell=True)
             res = ''
 
-    return res
+    return int(res)
 
 if run("dialog --defaultno --yesno \"Am I a worker?\" 5 19", shell=True, stderr=PIPE).returncode != 0:
     while True:
         row = ask_integer("Enter row", 1, 65535, 8, 25)
         col = ask_integer("Enter column", 1, 65535, 8, 28)
+
+        row = hex(row)[2:]
+        col = hex(col)[2:]
         
         url = "http://" + SERVER_IP + "/collector/contestant?mac=" + mac + "&row=" + row + "&col=" + col
         r = requests.get(url)
@@ -38,6 +41,9 @@ if run("dialog --defaultno --yesno \"Am I a worker?\" 5 19", shell=True, stderr=
 else:
     while True:
         num = ask_integer("Enter number", 1, 65535, 8, 28)
+
+        num = hex(num)[2:]
+
         url = "http://" + SERVER_IP + "/collector/worker?mac=" + mac + "&num=" + num
         r = requests.get(url)
         if r.status_code != 200:
