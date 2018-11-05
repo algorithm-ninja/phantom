@@ -22,15 +22,21 @@ def my_ip():
             f"ip --json addr show to {PREFIX}/24", stdout=subprocess.PIPE, shell=True)
         ips = json.loads(proc.stdout)
 
-        wired, wireless = None, None
+        wired, wireless, bond = None, None, None
         for interface in ips:
             if interface["operstate"] != "UP":
                 continue
-            if interface["ifname"].startswith('e'):
+            if interface["ifname"].startswith("e"):
                 wired = interface
-            elif interface["ifname"].startswith('w'):
+            elif interface["ifname"].startswith("w"):
                 wireless = interface
+            elif interface["ifname"].startswith("bond"):
+                bond = interface
 
+        if bond is not None:
+            print("[*] Bonding interface found")
+            device = bond["ifname"]
+            break
         if wired is not None:
             print("[*] Wired interface found")
             device = wired["ifname"]
