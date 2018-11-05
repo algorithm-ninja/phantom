@@ -24,7 +24,7 @@
       "cmds": [
         "echo Sono un contestant",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace --sparse rsync://[fdcd::1]/ftp/contestant.img /mnt/contestant.img",
+        "rsync -vLP --inplace rsync://[fdcd::1]/ftp/contestant.img /mnt/contestant.img",
         "dd if=/mnt/contestant.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
         "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
@@ -39,7 +39,7 @@
       "cmds": [
         "echo Sono un worker",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace --sparse rsync://[fdcd::1]/ftp/worker.img /mnt/worker.img",
+        "rsync -vLP --inplace rsync://[fdcd::1]/ftp/worker.img /mnt/worker.img",
         "dd if=/mnt/worker.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
         "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
