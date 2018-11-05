@@ -117,6 +117,7 @@ def check_update():
         response = requests.get(f"http://{GATEWAY}/static/client.py")
         with open("/root/client.py", "wb") as f:
             f.write(response.content)
+        subprocess.run("chmod +x /root/client.py", shell=True)
         print("[*] Updated successfully")
         time.sleep(5)
         subprocess.run("reboot", shell=True)
