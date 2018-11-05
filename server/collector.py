@@ -158,9 +158,9 @@ class ScriptHandler(object):
 
     def add_contestant(self, mac, row, col):
         try:
-            if not 1 <= int(row) <= 255:
+            if not 1 <= int(row, 16) <= 65535:
                 raise ValueError()
-            if not 1 <= int(col) <= 255:
+            if not 1 <= int(col, 16) <= 65535:
                 raise ValueError()
         except:
             return "Invalid row/col: row=%s col=%s" % (row, col), 400
@@ -177,7 +177,7 @@ class ScriptHandler(object):
 
     def add_worker(self, mac, num):
         try:
-            if not 1 <= int(num) <= 255:
+            if not 1 <= int(num, 16) <= 65535:
                 raise ValueError()
         except:
             return "Invalid num: num=%s" % (num), 400
