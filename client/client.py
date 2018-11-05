@@ -5,6 +5,7 @@ import requests
 import subprocess
 import sys
 import time
+import os
 
 PREFIX = "fdcd::"
 GATEWAY = f"[{PREFIX}1]:5000"
@@ -13,7 +14,7 @@ CONFIG_URL = f"http://{GATEWAY}/config?ip="
 
 def my_ip():
     wired, wireless, device = None, None, ""
-    
+
     print("[*] Waiting for a network interface")
     while wired is None and wireless is None:
         proc = subprocess.run(
@@ -21,12 +22,13 @@ def my_ip():
         ips = json.loads(proc.stdout)
 
         for interface in ips:
-            if interface["operstate"] != "UP": continue
+            if interface["operstate"] != "UP":
+                continue
             if interface["ifname"].startswith('e'):
                 wired = interface
             elif interface["ifname"].startswith('w'):
                 wireless = interface
-        
+
         if wired is not None:
             print("[*] Wired interface found")
             device = wired["ifname"]
@@ -35,23 +37,31 @@ def my_ip():
             print("[*] Wireless interface found")
             device = wireless["ifname"]
             break
-        
+
         time.sleep(1)
-    
+
     print(f"[*] The network device is {device}")
-    possilbe_ips = list(filter(
+    possible_ips = list(filter(
         bool, map(lambda x: x.get("local"), ips[0]["addr_info"])))
-    if len(possilbe_ips) != 1:
+    if len(possible_ips) != 1:
         print("[E] Found zero or more than one possible ips!")
-        print(f"    Possible ips: {possilbe_ips}")
+        print(f"    Possible ips: {possible_ips}")
         print(json.dumps(ips))
 
         subprocess.run(f'ip addr flush dev {device}', shell=True)
         print("[E] Rebooting in 10 seconds")
         time.sleep(10)
         subprocess.run('reboot', shell=True)
-    
-    return possilbe_ips[0]
+
+    os.environ["NETWORK_DEVICE"] = device
+    os.environ["MY_IP"] = possible_ips[0]
+
+    data = json.loads(subprocess.run(
+        f"ip --json addr show dev {device}", shell=True, stdout=subprocess.PIPE).stdout)
+    dev_info = next(x for x in data if x.get("ifname") == device)
+    os.environ["MY_MAC"] = dev_info.get("address")
+
+    return possible_ips[0]
 
 
 def exec_command(cmd):
