@@ -109,7 +109,8 @@ def check_update():
     response = requests.get(f"{SERVER_PREFIX}/client_hash")
     with open("/root/client.py.hash", "wb") as f:
         f.write(response.content)
-    proc = subprocess.run("b2sum -c client.py.hash", shell=True, cwd="/root")
+    proc = subprocess.run("b2sum -c client.py.hash", shell=True, cwd="/root",
+                          stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if proc.returncode == 0:
         print("[*] Alredy up-to-date")
     else:
