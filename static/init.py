@@ -8,27 +8,40 @@ SERVER_IP = "[fdcd::1]"
 mac = os.environ['MY_MAC']
 ip = ''
 
+def ask_integer(desc, start, end, h, w):
+    res = ''
+    cmd = f"dialog --nocancel --inputbox \"{desc} [{start}-{end}]:\" {h} {w}"
+    
+    while res == '':
+        res = run(cmd, shell=True, stderr=PIPE).stderr.decode()
+        try:
+            assert(start <= int(res) <= end)
+        except:
+            run("dialog --msgbox \"Not a valid integer\" 5 23", shell=True)
+            res = ''
+
+    return res
+
 if run("dialog --defaultno --yesno \"Am I a worker?\" 5 19", shell=True, stderr=PIPE).returncode != 0:
     while True:
-        row = run("dialog --nocancel --inputbox \"Enter row [1-255]:\" 8 22", shell=True, stderr=PIPE).stderr.decode()
-        col = run("dialog --nocancel --inputbox \"Enter column [1-255]:\" 8 25", shell=True, stderr=PIPE).stderr.decode()
+        row = ask_integer("Enter row", 1, 65535, 8, 25)
+        col = ask_integer("Enter column", 1, 65535, 8, 28)
+        
         url = "http://" + SERVER_IP + "/collector/contestant?mac=" + mac + "&row=" + row + "&col=" + col
         r = requests.get(url)
         if r.status_code != 200:
-            print("Error getting ip")
-            print(r)
+            run(f"dialog --msgbox \"Error: {r.text}\" 6 40", shell=True)
         else:
             ip = r.text
             print(ip)
             break
 else:
     while True:
-        num = run("dialog --nocancel --inputbox \"Enter number [1-255]:\" 8 22", shell=True, stderr=PIPE).stderr.decode()
+        num = ask_integer("Enter number", 1, 65535, 8, 28)
         url = "http://" + SERVER_IP + "/collector/worker?mac=" + mac + "&num=" + num
         r = requests.get(url)
         if r.status_code != 200:
-            print("Error getting ip")
-            print(r)
+            run(f"dialog --msgbox \"Error: {r.text}\" 6 40", shell=True)
         else:
             ip = r.text
             print(ip)
