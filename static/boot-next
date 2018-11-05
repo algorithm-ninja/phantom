@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+
+# thanks https://gist.github.com/ephemient/09170189577573ca3b8f0f9dbbf4cde6
+
+import contextlib
+import ctypes
+import os
+import pathlib
+import subprocess
+import sys
+
+EFIVARSFS = pathlib.Path('/sys/firmware/efi/efivars')
+LOADER_GUID = '4a67b082-0a4c-41cf-b6c7-440b29bb8c4f'
+LOADER_ENTRY_ONE_SHOT = 'LoaderEntryOneShot'
+
+FS_IMMUTABLE_FL = 0x00000010  # see <linux/fs.h>
+
+try:
+    libe2p = ctypes.CDLL('libe2p.so.2', use_errno=True)
+    fgetflags = libe2p.fgetflags
+    fgetflags.restype = ctypes.c_int
+    fgetflags.argtypes = [ctypes.c_char_p, ctypes.c_void_p]
+    fsetflags = libe2p.fsetflags
+    fsetflags.restype = ctypes.c_int
+    fsetflags.argtypes = [ctypes.c_char_p, ctypes.c_ulong]
+
+    @contextlib.contextmanager
+    def ensure_not_immutable(path):
+        flags = (ctypes.c_ulong * 1)()
+        rc = fgetflags(path, ctypes.byref(flags))
+        if rc == 0 and (flags[0] & FS_IMMUTABLE_FL) != 0:
+            rc = fsetflags(path, flags[0] & ~FS_IMMUTABLE_FL)
+            did_chattr = rc == 0
+        else:
+            did_chattr = False
+        yield
+        if did_chattr:
+            fsetflags(path, flags[0])
+except OSError:
+    @contextlib.contextmanager
+    def ensure_not_immutable(path):
+        yield
+
+if len(sys.argv) > 1:
+    var_value = b'\7\0\0\0' + sys.argv[1].encode('utf-16le') + b'\0\0'
+    var_path = EFIVARSFS / '{1}-{0}'.format(LOADER_GUID, LOADER_ENTRY_ONE_SHOT)
+    with ensure_not_immutable(bytes(var_path)), open(var_path, 'wb') as f:
+        f.write(var_value)
+
+var_name = '{0}-{1}'.format(LOADER_GUID, LOADER_ENTRY_ONE_SHOT)
+sys.exit(subprocess.call(['efivar', '-p', '-n', var_name]))

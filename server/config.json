@@ -2,17 +2,60 @@
   "wait": {
     "any": {
       "mode": "wait",
-      "cmds": ["echo 42", "cat /etc/passwd"]
+      "cmds": ["echo NO SO CHI SONO, ecco le password xDxD", "cat /etc/passwd"]
+    }
+  },
+  "update": {
+    "any": {
+      "mode": "exec",
+      "cmds": [
+        "echo Update mode",
+        "curl --fail http://[fdcd::1]/static/client.py > /tmp/client.py",
+        "curl --fail http://[fdcd::1]:5000/client_hash > /tmp/client.py.hash",
+        "cd /tmp && b2sum -c client.py.hash",
+        "chmod +x /tmp/client.py",
+        "mv /tmp/client.py /root/client.py && sync && echo updated && sleep 5s && reboot"
+      ]
     }
   },
   "default": {
     "fdcd::c:0:0/96": {
       "mode": "exec",
-      "cmds": []
+      "cmds": [
+        "echo Sono un contestant",
+        "mount /dev/nvme0n1p5 /mnt",
+        "rsync -vP --inplace rsync://[fdcd::1]/ftp/archlinux_contestant.img /mnt/archlinux_contestant.img",
+        "dd if=/mnt/archlinux_contestant.img of=/dev/nvme0n1p4 bs=4M status=progress",
+        "sync",
+        "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
+        "chmod +x /tmp/boot-next",
+        "/tmp/boot-next archlinux",
+        "sleep 5s",
+        "reboot"
+      ]
     },
     "fdcd::d:0:0/96": {
       "mode": "exec",
-      "cmds": []
+      "cmds": [
+        "echo Sono un worker",
+        "mount /dev/nvme0n1p5 /mnt",
+        "rsync -vP --inplace rsync://[fdcd::1]/ftp/archlinux_worker.img /mnt/archlinux_worker.img",
+        "dd if=/mnt/archlinux_worker.img of=/dev/nvme0n1p4 bs=4M status=progress",
+        "sync",
+        "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
+        "chmod +x /tmp/boot-next",
+        "/tmp/boot-next archlinux",
+        "sleep 5s",
+        "reboot"
+      ]
+    },
+    "fdcd::f:0:0/96": {
+      "mode": "exec",
+      "cmds": [
+        "curl http://[fdcd::1]/static/init.py > /tmp/init.py",
+        "chmod +x /tmp/init.py",
+        "/tmp/init.py"
+      ]
     }
   }
 }

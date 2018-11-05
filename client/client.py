@@ -8,8 +8,9 @@ import time
 import os
 
 PREFIX = "fdcd::"
-GATEWAY = f"[{PREFIX}1]:5000"
-CONFIG_URL = f"http://{GATEWAY}/config?ip="
+GATEWAY = f"[{PREFIX}1]"
+SERVER_PREFIX = f"http://{GATEWAY}:5000"
+CONFIG_URL = f"{SERVER_PREFIX}/config?ip="
 
 
 def my_ip():
@@ -46,7 +47,7 @@ def my_ip():
                 print("[*] Wireless interface found")
                 device = wireless["ifname"]
                 break
-        
+
         time.sleep(1)
 
     print(f"[*] The network device is {device}")
@@ -62,15 +63,18 @@ def my_ip():
         time.sleep(10)
         subprocess.run('reboot', shell=True)
 
+    ip = possible_ips[0]
     os.environ["NETWORK_DEVICE"] = device
-    os.environ["MY_IP"] = possible_ips[0]
+    os.environ["MY_IP"] = ip
 
     data = json.loads(subprocess.run(
         f"ip --json addr show dev {device}", shell=True, stdout=subprocess.PIPE).stdout)
     dev_info = next(x for x in data if x.get("ifname") == device)
     os.environ["MY_MAC"] = dev_info.get("address")
 
-    return possible_ips[0]
+    print(f"[*] My IP is {ip}")
+
+    return ip
 
 
 def exec_command(cmd):
@@ -99,9 +103,28 @@ def exec_mode(config):
     sys.exit(2)
 
 
+def check_update():
+    print("[*] Checking for updates")
+    response = requests.get(f"{SERVER_PREFIX}/client_hash")
+    with open("/root/client.py.hash", "wb") as f:
+        f.write(response.content)
+    proc = subprocess.run("b2sum -c client.py.hash", shell=True, cwd="/root")
+    if proc.returncode == 0:
+        print("[*] Alredy up-to-date")
+    else:
+        print("[*] Updated needed")
+        response = requests.get(f"http://{GATEWAY}/static/client.py")
+        with open("/root/client.py", "wb") as f:
+            f.write(response.content)
+        print("[*] Updated successfully")
+        time.sleep(5)
+        subprocess.run("reboot", shell=True)
+
+
 def main():
     print("Welcome in phantom!")
     url = CONFIG_URL + my_ip()
+    check_update()
     print(f"[*] Config url: {url}")
 
     response = requests.get(url)
