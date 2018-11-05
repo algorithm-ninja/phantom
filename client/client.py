@@ -87,6 +87,7 @@ def run_commands(cmds):
     for cmd in cmds:
         code = exec_command(cmd)
         if code:
+            print("[X] Command failed")
             sys.exit(code)
 
 
@@ -122,7 +123,20 @@ def check_update():
 
 
 def main():
-    print("Welcome in phantom!")
+    print("""
+            888                     888
+            888                     888
+            888                     888
+    88888b. 88888b.  8888b. 88888b. 888888 .d88b. 88888b.d88b.
+    888 "88b888 "88b    "88b888 "88b888   d88""88b888 "888 "88b
+    888  888888  888.d888888888  888888   888  888888  888  888
+    888 d88P888  888888  888888  888Y88b. Y88..88P888  888  888
+    88888P" 888  888"Y888888888  888 "Y888 "Y88P" 888  888  888
+    888
+    888
+    888
+    """)
+
     url = CONFIG_URL + my_ip()
     check_update()
     print(f"[*] Config url: {url}")
