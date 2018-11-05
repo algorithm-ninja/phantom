@@ -107,17 +107,24 @@ def exec_mode(config):
 def check_update():
     print("[*] Checking for updates")
     response = requests.get(f"{SERVER_PREFIX}/client_hash")
-    with open("/root/client.py.hash", "wb") as f:
+    with open("/tmp/client.py.hash", "wb") as f:
         f.write(response.content)
-    proc = subprocess.run("b2sum -c client.py.hash", shell=True, cwd="/root",
+    proc = subprocess.run("b2sum -c /tmp/client.py.hash", shell=True, cwd="/root",
                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     if proc.returncode == 0:
         print("[*] Alredy up-to-date")
     else:
         print("[*] Updated needed")
         response = requests.get(f"http://{GATEWAY}/static/client.py")
-        with open("/root/client.py", "wb") as f:
+        with open("/tmp/client.py", "wb") as f:
             f.write(response.content)
+        proc = subprocess.run(
+            "b2sum -c /tmp/client.py.hash", shell=True, cwd="/tmp")
+        if proc.returncode != 0:
+            print("[E] Update failed")
+            subprocess.run("bash", shell=True)
+            sys.exit(1)
+        subprocess.run("cp /tmp/client.py /root/client.py", shell=True)
         subprocess.run("chmod +x /root/client.py", shell=True)
         print("[*] Updated successfully")
         time.sleep(5)
