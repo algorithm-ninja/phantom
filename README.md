@@ -23,7 +23,7 @@ These must all be running:
 
 To clear all IP-MAC associations:
 
-`sudo echo >/etc/dnsmasq.d/ethers.conf`
+`echo | sudo tee /etc/dnsmasq.d/ethers.conf`
 
 `sudo systemctl restart phantom-collector`
 
