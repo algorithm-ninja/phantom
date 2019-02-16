@@ -9,7 +9,7 @@ import os
 
 PREFIX = "fdcd::"
 GATEWAY = f"[{PREFIX}1]"
-SERVER_PREFIX = f"http://{GATEWAY}:5000"
+SERVER_PREFIX = f"https://ioi.local/phantom/server"
 CONFIG_URL = f"{SERVER_PREFIX}/config?ip="
 
 
@@ -106,6 +106,10 @@ def exec_mode(config):
 
 def check_update():
     print("[*] Checking for updates")
+    path = os.path.dirname(os.path.abspath(__file__))
+    self_hash = subprocess.run(f"b2sum client.py", shell=True, cwd=path, stdout=subprocess.PIPE).stdout
+    print("[*]  client version is ", self_hash[:16].decode('utf-8'))
+
     response = requests.get(f"{SERVER_PREFIX}/client_hash")
     with open("/tmp/client.py.hash", "wb") as f:
         f.write(response.content)
@@ -114,8 +118,8 @@ def check_update():
     if proc.returncode == 0:
         print("[*] Alredy up-to-date")
     else:
-        print("[*] Updated needed")
-        response = requests.get(f"http://{GATEWAY}/static/client.py")
+        print("[*] Update needed")
+        response = requests.get(f"https://ioi.local/phantom/static/client.py")
         with open("/tmp/client.py", "wb") as f:
             f.write(response.content)
         proc = subprocess.run(

@@ -2,19 +2,33 @@
   "wait": {
     "any": {
       "mode": "wait",
-      "cmds": ["echo NO SO CHI SONO, ecco le password xDxD", "cat /etc/passwd"]
+      "cmds": [
+        "echo Non so chi sono xD"
+      ]
     }
   },
-  "update": {
+  "add_trust": {
+    "any": {
+      "mode": "wait",
+      "cmds": [
+        "curl --fail https://ioi.local/static/ioi.ca.crt > /root/ioi.ca.crt",
+        "trust anchor /root/ioi.ca.crt",
+        "echo '::1 localhost' > /etc/hosts",
+        "echo 'fdcd::1 ioi.local' >> /etc/hosts"
+      ]
+    }
+  },
+  "fix_systemdboot": {
     "any": {
       "mode": "exec",
       "cmds": [
-        "echo Update mode",
-        "curl --fail http://[fdcd::1]/static/client.py > /tmp/client.py",
-        "curl --fail http://[fdcd::1]:5000/client_hash > /tmp/client.py.hash",
-        "cd /tmp && b2sum -c client.py.hash",
-        "chmod +x /tmp/client.py",
-        "mv /tmp/client.py /root/client.py && sync && echo updated && sleep 5s && reboot"
+        "echo 'title   ArchLinux' > /boot/loader/entries/archlinux.conf",
+        "echo 'linux   /next_stage/vmlinuz-linux' >> /boot/loader/entries/archlinux.conf",
+        "echo 'initrd  /next_stage/intel-ucode.img' >> /boot/loader/entries/archlinux.conf",
+        "echo 'initrd  /next_stage/initramfs-linux.img' >> /boot/loader/entries/archlinux.conf",
+        "echo 'options root=/dev/nvme0n1p4 pci=noaer ro' >> /boot/loader/entries/archlinux.conf",
+        "cat /boot/loader/entries/archlinux.conf",
+        "bash"
       ]
     }
   },
@@ -24,10 +38,20 @@
       "cmds": [
         "echo Sono un contestant",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace rsync://[fdcd::1]/ftp/contestant.img /mnt/contestant.img",
+        "rsync -vLP --inplace rsync://ioi.local/ftp/contestant.img /mnt/contestant.img",
         "dd if=/mnt/contestant.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
-        "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
+
+        "umount /mnt",
+        "mount /dev/nvme0n1p4 /mnt",
+        "mkdir -p /boot/next_stage",
+        "mkdir -p /boot/prev_stage",
+        "cp -r /mnt/boot/* /boot/next_stage",
+        "rm -f /mnt/etc/machine-id",
+        "cp /boot/machine-id /mnt/etc/machine-id",
+        "umount /mnt",
+        
+        "curl --fail https://ioi.local/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",
         "sleep 5s",
@@ -39,10 +63,20 @@
       "cmds": [
         "echo Sono un worker",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace rsync://[fdcd::1]/ftp/worker.img /mnt/worker.img",
+        "rsync -vLP --inplace rsync://ioi.local/ftp/worker.img /mnt/worker.img",
         "dd if=/mnt/worker.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
-        "curl http://[fdcd::1]/static/boot-next > /tmp/boot-next",
+
+        "umount /mnt",
+        "mount /dev/nvme0n1p4 /mnt",
+        "mkdir -p /boot/next_stage",
+        "mkdir -p /boot/prev_stage",
+        "cp -r /mnt/boot/* /boot/next_stage",
+        "rm -f /mnt/etc/machine-id",
+        "cp /boot/machine-id /mnt/etc/machine-id",
+        "umount /mnt",
+        
+        "curl --fail https://ioi.local/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",
         "sleep 5s",
@@ -52,7 +86,7 @@
     "fdcd::f:0:0/96": {
       "mode": "exec",
       "cmds": [
-        "curl http://[fdcd::1]/static/init.py > /tmp/init.py",
+        "curl --fail https://ioi.local/phantom/static/init.py > /tmp/init.py",
         "chmod +x /tmp/init.py",
         "/tmp/init.py"
       ]

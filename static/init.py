@@ -4,7 +4,6 @@ from subprocess import run, PIPE
 import requests
 import os, time
 
-SERVER_IP = "[fdcd::1]"
 mac = os.environ['MY_MAC']
 ip = ''
 
@@ -30,7 +29,7 @@ if run("dialog --defaultno --yesno \"Am I a worker?\" 5 19", shell=True, stderr=
         row = hex(row)[2:]
         col = hex(col)[2:]
         
-        url = "http://" + SERVER_IP + "/collector/contestant?mac=" + mac + "&row=" + row + "&col=" + col
+        url = "https://ioi.local/phantom/collector/contestant?mac=" + mac + "&row=" + row + "&col=" + col
         r = requests.get(url)
         if r.status_code != 200:
             run(f"dialog --msgbox \"Error: {r.text}\" 6 40", shell=True)
@@ -44,7 +43,7 @@ else:
 
         num = hex(num)[2:]
 
-        url = "http://" + SERVER_IP + "/collector/worker?mac=" + mac + "&num=" + num
+        url = "https://ioi.local/phantom/collector/worker?mac=" + mac + "&num=" + num
         r = requests.get(url)
         if r.status_code != 200:
             run(f"dialog --msgbox \"Error: {r.text}\" 6 40", shell=True)
@@ -56,14 +55,14 @@ else:
 run("dialog --infobox \"Done, waiting to reboot\nI am " + ip + "\" 4 27", shell=True)
 
 ts = ''
-r = requests.get("http://" + SERVER_IP + "/collector/reboot_timestamp")
+r = requests.get("https://ioi.local/phantom/collector/reboot_timestamp")
 if r.status_code != 200:
     run("reboot", shell=True)
 else:
     ts = r.text
 
 while True:
-    r = requests.get("http://" + SERVER_IP + "/collector/reboot_timestamp")
+    r = requests.get("https://ioi.local/phantom/collector/reboot_timestamp")
     if r.status_code != 200 or ts != r.text:
         run("reboot", shell=True)
     ts = r.text
