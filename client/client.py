@@ -9,7 +9,7 @@ import os
 
 PREFIX = "fdcd::"
 GATEWAY = f"[{PREFIX}1]"
-SERVER_PREFIX = f"https://ioi.local/phantom/server"
+SERVER_PREFIX = f"https://volterra.olinfo.it/phantom/server"
 CONFIG_URL = f"{SERVER_PREFIX}/config?ip="
 
 
@@ -119,7 +119,7 @@ def check_update():
         print("[*] Alredy up-to-date")
     else:
         print("[*] Update needed")
-        response = requests.get(f"https://ioi.local/phantom/static/client.py")
+        response = requests.get(f"https://volterra.olinfo.it/phantom/static/client.py")
         with open("/tmp/client.py", "wb") as f:
             f.write(response.content)
         proc = subprocess.run(

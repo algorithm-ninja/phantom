@@ -11,10 +11,10 @@
     "any": {
       "mode": "wait",
       "cmds": [
-        "curl --fail https://ioi.local/static/ioi.ca.crt > /root/ioi.ca.crt",
+        "curl --fail https://volterra.olinfo.it/static/ioi.ca.crt > /root/ioi.ca.crt",
         "trust anchor /root/ioi.ca.crt",
         "echo '::1 localhost' > /etc/hosts",
-        "echo 'fdcd::1 ioi.local' >> /etc/hosts"
+        "echo 'fdcd::1 volterra.olinfo.it' >> /etc/hosts"
       ]
     }
   },
@@ -38,7 +38,7 @@
       "cmds": [
         "echo Sono un contestant",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace rsync://ioi.local/ftp/contestant.img /mnt/contestant.img",
+        "rsync -vLP --inplace rsync://volterra.olinfo.it/ftp/contestant.img /mnt/contestant.img",
         "dd if=/mnt/contestant.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
 
@@ -51,7 +51,7 @@
         "cp /boot/machine-id /mnt/etc/machine-id",
         "umount /mnt",
         
-        "curl --fail https://ioi.local/phantom/static/boot-next > /tmp/boot-next",
+        "curl --fail https://volterra.olinfo.it/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",
         "sleep 5s",
@@ -63,7 +63,7 @@
       "cmds": [
         "echo Sono un worker",
         "mount /dev/nvme0n1p5 /mnt",
-        "rsync -vLP --inplace rsync://ioi.local/ftp/worker.img /mnt/worker.img",
+        "rsync -vLP --inplace rsync://volterra.olinfo.it/ftp/worker.img /mnt/worker.img",
         "dd if=/mnt/worker.img of=/dev/nvme0n1p4 bs=4M status=progress",
         "sync",
 
@@ -76,7 +76,7 @@
         "cp /boot/machine-id /mnt/etc/machine-id",
         "umount /mnt",
         
-        "curl --fail https://ioi.local/phantom/static/boot-next > /tmp/boot-next",
+        "curl --fail https://volterra.olinfo.it/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",
         "sleep 5s",
@@ -86,7 +86,7 @@
     "fdcd::f:0:0/96": {
       "mode": "exec",
       "cmds": [
-        "curl --fail https://ioi.local/phantom/static/init.py > /tmp/init.py",
+        "curl --fail https://volterra.olinfo.it/phantom/static/init.py > /tmp/init.py",
         "chmod +x /tmp/init.py",
         "/tmp/init.py"
       ]
