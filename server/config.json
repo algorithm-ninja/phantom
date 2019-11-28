@@ -26,7 +26,7 @@
         "echo 'linux   /next_stage/vmlinuz-linux' >> /boot/loader/entries/archlinux.conf",
         "echo 'initrd  /next_stage/intel-ucode.img' >> /boot/loader/entries/archlinux.conf",
         "echo 'initrd  /next_stage/initramfs-linux.img' >> /boot/loader/entries/archlinux.conf",
-        "echo 'options root=/dev/nvme0n1p4 pci=noaer ro' >> /boot/loader/entries/archlinux.conf",
+        "echo 'options root=/dev/nvme0n1p4 pci=noaer rw' >> /boot/loader/entries/archlinux.conf",
         "cat /boot/loader/entries/archlinux.conf",
         "bash"
       ]
@@ -50,7 +50,7 @@
         "rm -f /mnt/etc/machine-id",
         "cp /boot/machine-id /mnt/etc/machine-id",
         "umount /mnt",
-        
+
         "curl --fail https://volterra.olinfo.it/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",
@@ -75,7 +75,7 @@
         "rm -f /mnt/etc/machine-id",
         "cp /boot/machine-id /mnt/etc/machine-id",
         "umount /mnt",
-        
+
         "curl --fail https://volterra.olinfo.it/phantom/static/boot-next > /tmp/boot-next",
         "chmod +x /tmp/boot-next",
         "/tmp/boot-next archlinux",

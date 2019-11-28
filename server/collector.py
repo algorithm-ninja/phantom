@@ -128,7 +128,7 @@ class EthersManager():
         if self.ipv4:
             lines = ["%s %s" % (mac, ip) for mac, ip in self.ethers.items()]
         else:
-            lines = ["%s,[%s],5m" %
+            lines = ["%s,[%s],24h" %
                      (mac, ip) for mac, ip in self.ethers.items()]
 
         print(Fore.GREEN + Style.BRIGHT + "Generated ethers file")
